@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="ca">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0906">
+  <meta name="description" content="REBENTAOS AWARDS — consulta els clips i els nominats de cada categoria.">
+  <title>REBENTAOS AWARDS</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b0906;
+      --card: #15110b;
+      --card-2: #1b160d;
+      --text: #f3ead2;
+      --muted: #a79c82;
+      --gold: #d4af37;
+      --line: #3b3220;
+      --shadow: 0 18px 50px rgba(0,0,0,.35);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0; min-height: 100vh; background: var(--bg); color: var(--text);
+      font-family: Montserrat, "Segoe UI", Arial, sans-serif; font-weight: 350;
+    }
+    button { font: inherit; }
+    .serif, h1, h2, h3, .brand { font-family: "Cormorant Garamond", Georgia, "Times New Roman", serif; }
+    .hero {
+      min-height: min(900px, 94svh); display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center;
+      padding: 70px 22px 80px;
+      background: linear-gradient(180deg, rgba(8,6,3,.52), rgba(8,6,3,.86)),
+                  url("assets/hero.jpeg") center / cover no-repeat;
+      border-bottom: 1px solid var(--line);
+    }
+    .kick { color: var(--gold); font-size: .72rem; letter-spacing: .48em; text-transform: uppercase; }
+    h1 { margin: 18px 0 0; font-size: clamp(3rem, 10vw, 6.4rem); line-height: .88; font-weight: 600; letter-spacing: .12em; text-shadow: 0 3px 28px #000; }
+    h1 span { display: block; color: var(--gold); margin-top: .15em; }
+    .rule { width: 88px; height: 1px; background: var(--gold); margin: 30px auto 22px; }
+    .subtitle { margin: 0; font-size: .78rem; letter-spacing: .3em; text-transform: uppercase; }
+    .intro { color: #d6c9aa; max-width: 540px; line-height: 1.7; font-size: .88rem; margin: 22px auto 30px; }
+    .btn {
+      border: 1px solid var(--gold); background: transparent; color: var(--gold);
+      padding: 14px 30px; min-height: 48px; cursor: pointer; text-transform: uppercase;
+      letter-spacing: .22em; font-size: .72rem; transition: background .2s, color .2s, transform .2s;
+    }
+    .btn:hover, .btn:focus-visible { background: var(--gold); color: #120d03; outline: none; }
+    .btn:active { transform: translateY(1px); }
+    .btn.fill { color: #120d03; background: var(--gold); }
+    .btn.fill:hover, .btn.fill:focus-visible { background: transparent; color: var(--gold); }
+    .preview-note {
+      display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap;
+      padding: 13px 18px; border-bottom: 1px solid var(--line); background: #100d08;
+      color: var(--muted); text-align: center; font-size: .68rem; letter-spacing: .17em; text-transform: uppercase;
+    }
+    .preview-note strong { color: var(--gold); font-weight: 500; }
+    .wrap { width: min(1120px, 100% - 36px); margin: 0 auto; padding: 54px 0 80px; }
+    .section-head { display: flex; justify-content: space-between; align-items: end; gap: 18px; margin-bottom: 24px; flex-wrap: wrap; }
+    .eyebrow { color: var(--gold); font-size: .68rem; letter-spacing: .35em; text-transform: uppercase; margin: 0 0 9px; }
+    h2 { color: var(--gold); font-size: clamp(2rem, 5vw, 2.9rem); line-height: 1; font-weight: 600; letter-spacing: .05em; margin: 0; }
+    .section-count { color: var(--muted); font-size: .76rem; letter-spacing: .1em; }
+    .category-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; }
+    .category-card {
+      min-height: 156px; border: 1px solid var(--line); background: linear-gradient(145deg, #1a150d, #100d08);
+      color: var(--text); text-align: left; padding: 20px; cursor: pointer; position: relative; overflow: hidden;
+      transition: border-color .2s, transform .2s, background .2s;
+    }
+    .category-card:hover, .category-card:focus-visible { border-color: var(--gold); transform: translateY(-2px); outline: none; background: #1c170e; }
+    .category-card::after { content: ""; position: absolute; right: -30px; bottom: -62px; width: 150px; height: 150px; border: 1px solid rgba(212,175,55,.11); border-radius: 50%; pointer-events: none; }
+    .cat-num { color: var(--gold); font-size: .67rem; letter-spacing: .28em; display: block; margin-bottom: 15px; }
+    .cat-name { display: block; font-family: Georgia, serif; font-size: clamp(1.25rem, 2vw, 1.65rem); line-height: 1.05; position: relative; z-index: 1; }
+    .cat-meta { display: block; color: var(--muted); font-size: .68rem; margin-top: 14px; letter-spacing: .13em; text-transform: uppercase; }
+    .detail-head { display: flex; align-items: center; gap: 18px; margin-bottom: 28px; flex-wrap: wrap; }
+    .detail-title { flex: 1; min-width: 220px; }
+    .detail-desc { color: var(--muted); line-height: 1.65; font-size: .86rem; margin: 12px 0 0; }
+    .video-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; }
+    .video-card { padding: 0; border: 1px solid var(--line); background: var(--card); color: var(--text); text-align: left; cursor: pointer; min-width: 0; transition: transform .2s, border-color .2s; }
+    .video-card:hover, .video-card:focus-visible { border-color: var(--gold); transform: translateY(-3px); outline: none; }
+    .poster-wrap { position: relative; display: block; aspect-ratio: 16 / 10; background: #050403; overflow: hidden; }
+    .poster-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .35s; }
+    .video-card:hover img { transform: scale(1.035); }
+    .play-mark { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); border: 1px solid rgba(243,234,210,.85); background: rgba(8,6,3,.72); color: var(--gold); width: 47px; height: 47px; display: grid; place-items: center; border-radius: 50%; font-size: 1rem; padding-left: 3px; }
+    .video-name { display: block; min-height: 66px; padding: 15px 14px 16px; font-family: Georgia, serif; font-size: 1.12rem; line-height: 1.08; }
+    .photo-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; }
+    .photo-grid.series-gallery { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .photo-card { border: 1px solid var(--line); background: var(--card); padding: 0; overflow: hidden; }
+    .photo-card img { display: block; width: 100%; aspect-ratio: 4/5; object-fit: cover; background: #050403; }
+    .photo-card strong { display: block; padding: 13px 14px 15px; color: var(--text); font-family: Georgia, serif; font-size: 1.15rem; font-weight: 600; }
+    .series-gallery .photo-card img { aspect-ratio: 16/10; object-fit: contain; padding: 0; background: #050403; }
+    .photo-card.pending { border: 1px dashed #65532a; background: rgba(212,175,55,.045); }
+    .photo-pending-visual { aspect-ratio: 16/10; display: grid; place-items: center; color: var(--gold); font-size: 2.4rem; background: rgba(212,175,55,.035); }
+    .photo-card.pending strong { color: var(--muted); text-align: center; font-size: 1rem; }
+    .empty-card { border: 1px dashed #65532a; background: rgba(212,175,55,.045); text-align: center; padding: 60px 24px; }
+    .empty-mark { color: var(--gold); font-size: 2rem; margin-bottom: 12px; }
+    .empty-card h3 { margin: 0 0 10px; color: var(--gold); font-size: 1.65rem; }
+    .empty-card p { margin: 0 auto; max-width: 480px; color: var(--muted); line-height: 1.65; font-size: .86rem; }
+    footer { border-top: 1px solid var(--line); padding: 27px 18px 35px; text-align: center; color: var(--muted); font-size: .66rem; letter-spacing: .16em; text-transform: uppercase; }
+    footer strong { color: var(--gold); font-family: Georgia, serif; font-size: .95rem; letter-spacing: .12em; }
+    .modal { position: fixed; inset: 0; z-index: 20; display: none; align-items: center; justify-content: center; padding: 24px; background: rgba(0,0,0,.91); }
+    .modal.open { display: flex; }
+    .modal-panel { width: min(1100px, 100%); position: relative; border: 1px solid var(--gold); background: #090704; box-shadow: var(--shadow); }
+    .modal-top { display: flex; justify-content: space-between; align-items: center; gap: 15px; padding: 13px 16px; border-bottom: 1px solid var(--line); }
+    .modal-title { color: var(--gold); font-family: Georgia, serif; font-size: 1.16rem; }
+    .modal-actions { display: flex; align-items: center; gap: 8px; }
+    .icon-btn { border: 1px solid var(--line); color: var(--text); background: transparent; min-width: 38px; min-height: 36px; cursor: pointer; }
+    .icon-btn:hover, .icon-btn:focus-visible { border-color: var(--gold); color: var(--gold); outline: none; }
+    .modal video { display: block; width: 100%; max-height: calc(100svh - 150px); background: #000; aspect-ratio: 16 / 9; object-fit: contain; }
+    .video-error { margin: 0; padding: 12px 16px; color: #ffcf8b; background: #24170a; font-size: .82rem; line-height: 1.5; }
+    .modal-bottom { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; color: var(--muted); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; }
+    .hidden { display: none !important; }
+    @media (max-width: 900px) { .category-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } .video-grid, .photo-grid, .photo-grid.series-gallery { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+    @media (max-width: 560px) {
+      .hero { min-height: 82svh; padding-left: 16px; padding-right: 16px; }
+      .kick { letter-spacing: .3em; }
+      .subtitle { letter-spacing: .18em; line-height: 1.6; }
+      .wrap { width: calc(100% - 28px); padding: 38px 0 60px; }
+      .category-grid { grid-template-columns: 1fr; gap: 10px; }
+      .category-card { min-height: 130px; }
+      .video-grid, .photo-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
+      .video-name { font-size: 1rem; min-height: 60px; padding: 12px 10px; }
+      .modal { padding: 8px; }
+      .modal-panel { width: 100%; }
+      .modal video { aspect-ratio: 9 / 16; max-height: 76svh; }
+      .modal-bottom { padding: 10px; }
+      .btn { padding: 12px 17px; letter-spacing: .14em; font-size: .66rem; }
+    }
+    @media (prefers-reduced-motion: reduce) { *,*::before,*::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+    .vote-panel { margin-top:26px;padding:22px;border:1px solid var(--gold);border-radius:10px;background:#19160f; }
+    .vote-panel h3 { color:var(--gold);margin:0 0 14px; }
+    .vote-options { display:grid;gap:10px;margin:12px 0; }
+    .vote-option {display:flex;gap:10px;align-items:center;color:#f4ede0;cursor:pointer;}
+    .vote-panel button {margin-top:10px;}
+    .vote-message {color:#e6c780;margin-top:12px;}
+  </style>
+</head>
+<body>
+  <section class="hero" id="hero">
+    <div class="kick">Gala de premis</div>
+    <h1>REBENTAOS<span>AWARDS</span></h1>
+    <div class="rule"></div>
+    <p class="subtitle">QUI SERÀ EL MÉS REBENTAT?</p>
+    <p class="intro">Descobreix els nominats i mira els clips de cada categoria.</p>
+    <button class="btn fill" id="exploreBtn" type="button">Explora les categories</button>
+  </section>
+
+  <div class="preview-note"><strong>Votacions</strong><span id="authStatus">Connecta amb Google per votar</span> <button id="authButton" class="btn" type="button">Entrar amb Google</button></div>
+
+  <main class="wrap" id="main">
+    <section id="catalogue">
+      <div class="section-head">
+        <div><p class="eyebrow">REBENTAOS AWARDS</p><h2>Les categories</h2></div>
+        <div class="section-count" id="categoryCount"></div>
+      </div>
+      <div class="category-grid" id="categoryGrid"></div>
+    </section>
+    <section id="detail" class="hidden" aria-live="polite"></section>
+  </main>
+
+  <footer><strong>REBENTAOS AWARDS</strong><br><br>Votacions amb Google · Resultats privats</footer>
+
+  <div class="modal" id="videoModal" role="dialog" aria-modal="true" aria-label="Reproductor de vídeo">
+    <div class="modal-panel">
+      <div class="modal-top">
+        <div class="modal-title" id="modalTitle"></div>
+        <div class="modal-actions">
+          <button class="icon-btn" id="closeModal" type="button" aria-label="Tanca el vídeo">✕</button>
+        </div>
+      </div>
+      <video id="videoPlayer" controls playsinline webkit-playsinline preload="metadata"></video>
+      <p id="videoError" class="video-error hidden" role="status"></p>
+      <div class="modal-bottom">
+        <button class="icon-btn" id="previousVideo" type="button" aria-label="Vídeo anterior">←</button>
+        <span id="modalPosition"></span>
+        <button class="icon-btn" id="nextVideo" type="button" aria-label="Vídeo següent">→</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    'use strict';
+    const categories = [
+      { name: 'Millor Clip', type: 'videos', videos: [
+        { title: 'GUERRA CREMA', src: 'assets/videos/01-millor-clip-01.mp4', poster: 'assets/posters/01-millor-clip-01.jpg' },
+        { title: 'PICAPIEDRA', src: 'assets/videos/01-millor-clip-02.mp4', poster: 'assets/posters/01-millor-clip-02.jpg' },
+        { title: 'TORTILLA MANEL', src: 'assets/videos/01-millor-clip-03.mp4', poster: 'assets/posters/01-millor-clip-03.jpg' },
+        { title: 'VICTORIA, GANÉ', src: 'assets/videos/01-millor-clip-04.mp4', poster: 'assets/posters/01-millor-clip-04.jpg' }
+      ]},
+      { name: 'Millor Sèrie', type: 'photos', photos: [
+        { title: 'Ametlla de Mar', src: 'assets/photos/series-ametlla-de-mar.webp' },
+        { title: 'Vinaròs', src: 'assets/photos/series-vinaros.webp' },
+        { title: 'Madrid', src: 'assets/photos/series-madrid.webp' },
+        { title: 'FM Castellbisbal', src: 'assets/photos/series-fm-castellbisbal.webp' }
+      ]},
+      { name: 'Enfado de l’Any', type: 'videos', videos: [
+        { title: '¿DÓNDE ESTÁ MI CERVEZA?', src: 'assets/videos/02-enfado-de-lany-01.mp4', poster: 'assets/posters/02-enfado-de-lany-01.jpg' },
+        { title: 'GENÍS LI TIRA EL MÒBIL A GABRIEL', src: 'assets/videos/02-enfado-de-lany-02.mp4', poster: 'assets/posters/02-enfado-de-lany-02.jpg' },
+        { title: 'MARTÍ PEGA A TOT DÉU', src: 'assets/videos/02-enfado-de-lany-03.mp4', poster: 'assets/posters/02-enfado-de-lany-03.jpg' },
+        { title: 'AIGUA A LA CALA', src: 'assets/videos/02-enfado-de-lany-04.mp4', poster: 'assets/posters/02-enfado-de-lany-04.jpg' }
+      ]},
+      { name: 'Clip Forzado de l’Any', type: 'videos', videos: [
+        { title: 'DEJA YA DE GRABAR', src: 'assets/videos/03-clip-forzado-de-lany-01.mp4', poster: 'assets/posters/03-clip-forzado-de-lany-01.jpg' },
+        { title: 'BIEL A LA PISCINA', src: 'assets/videos/03-clip-forzado-de-lany-02.mp4', poster: 'assets/posters/03-clip-forzado-de-lany-02.jpg' },
+        { title: 'BIEL I GABRIEL TOSSINT DE CAMÍ A LA CALA', src: 'assets/videos/03-clip-forzado-de-lany-03.mp4', poster: 'assets/posters/03-clip-forzado-de-lany-03.jpg' },
+        { title: 'PARA YA DE GRABAR, TÍO', src: 'assets/videos/03-clip-forzado-de-lany-04.mp4', poster: 'assets/posters/03-clip-forzado-de-lany-04.jpg' }
+      ]},
+      { name: 'Millor Frase', type: 'videos', videos: [
+        { title: 'LOCO CON LA PECA', src: 'assets/videos/04-millor-frase-01.mp4', poster: 'assets/posters/04-millor-frase-01.jpg' },
+        { title: 'SERENO SERENITA', src: 'assets/videos/04-millor-frase-02.mp4', poster: 'assets/posters/04-millor-frase-02.jpg' },
+        { title: 'TORTILLA MANEL', src: 'assets/videos/04-millor-frase-03.mp4', poster: 'assets/posters/04-millor-frase-03.jpg' },
+        { title: 'VICTORIA, GANÉ', src: 'assets/videos/04-millor-frase-04.mp4', poster: 'assets/posters/04-millor-frase-04.jpg' }
+      ]},
+      { name: 'Millor Actuació Musical', type: 'videos', videos: [
+        { title: 'CONEJITA', src: 'assets/videos/05-millor-actuacio-musical-01.mp4', poster: 'assets/posters/05-millor-actuacio-musical-01.jpg' },
+        { title: 'FOCA', src: 'assets/videos/05-millor-actuacio-musical-02.mp4', poster: 'assets/posters/05-millor-actuacio-musical-02.jpg' },
+        { title: 'PERREO A LA PORTA', src: 'assets/videos/05-millor-actuacio-musical-03.mp4', poster: 'assets/posters/05-millor-actuacio-musical-03.jpg' },
+        { title: 'RAVE DEL NORBERT', src: 'assets/videos/05-millor-actuacio-musical-04.mp4', poster: 'assets/posters/05-millor-actuacio-musical-04.jpg' }
+      ]},
+      { name: 'Incorporació de l’Any', type: 'photos', photos: [
+        { title: 'VÍCTOR', src: 'assets/photos/incorporacio-1-victor.jpg' },
+        { title: 'MARTÍ', src: 'assets/photos/incorporacio-2-marti.jpg' },
+        { title: 'GABRIEL', src: 'assets/photos/incorporacio-3-gabriel.jpg' },
+        { title: 'ALFONSO', src: 'assets/photos/incorporacio-4-alfonso.jpg' }
+      ]},
+      { name: 'Millor Convidat', type: 'videos', videos: [
+        { title: 'FRANCESES', src: 'assets/videos/06-millor-convidat-01.mp4', poster: 'assets/posters/06-millor-convidat-01.jpg' },
+        { title: 'MARC', src: 'assets/videos/06-millor-convidat-02.mp4', poster: 'assets/posters/06-millor-convidat-02.jpg' },
+        { title: 'ODEIFS', src: 'assets/videos/06-millor-convidat-03.mp4', poster: 'assets/posters/06-millor-convidat-03.jpg' },
+        { title: 'FERALYX', src: 'assets/videos/06-millor-convidat-04.mp4', poster: 'assets/posters/06-millor-convidat-04.jpg' }
+      ]},
+      { name: 'Decepció de l’Any', type: 'videos', videos: [
+        { title: 'BIEL A L’ESTARTIT', src: 'assets/videos/07-decepcio-de-lany-01.mp4', poster: 'assets/posters/07-decepcio-de-lany-01.jpg' },
+        { title: 'GENÍS AMB LA FRANCESA', src: 'assets/videos/07-decepcio-de-lany-02.mp4', poster: 'assets/posters/07-decepcio-de-lany-02.jpg' },
+        { title: 'GENÍS A SAN FERMÍN', src: 'assets/videos/07-decepcio-de-lany-03.mp4', poster: 'assets/posters/07-decepcio-de-lany-03.jpg' },
+        { title: 'NURVA A L’ESTARTIT', src: 'assets/videos/07-decepcio-de-lany-04.mp4', poster: 'assets/posters/07-decepcio-de-lany-04.jpg' }
+      ]},
+      { name: 'MVP de l’Any', type: 'photos', photos: [
+        { title: 'BIEL', src: 'assets/photos/mvp-1-biel.jpg' },
+        { title: 'GABRIEL', src: 'assets/photos/mvp-2-gabriel.jpg' },
+        { title: 'GENÍS', src: 'assets/photos/mvp-3-genis.jpg' },
+        { title: 'MARTÍ', src: 'assets/photos/mvp-4-marti.jpg' },
+        { title: 'PAU', src: 'assets/photos/mvp-5-pau.jpg' }
+      ]}
+    ];
+
+    window.rebCategories = categories;
+    const categoryGrid = document.getElementById('categoryGrid');
+    const categoryCount = document.getElementById('categoryCount');
+    const catalogue = document.getElementById('catalogue');
+    const detail = document.getElementById('detail');
+    const modal = document.getElementById('videoModal');
+    const player = document.getElementById('videoPlayer');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalPosition = document.getElementById('modalPosition');
+    const videoError = document.getElementById('videoError');
+    let activeCategory = -1;
+    let activeVideo = -1;
+
+    function button(text, className, onClick, label) {
+      const el = document.createElement('button');
+      el.type = 'button'; el.className = className; el.textContent = text;
+      if (label) el.setAttribute('aria-label', label);
+      el.addEventListener('click', onClick);
+      return el;
+    }
+
+    function renderCatalogue() {
+      categoryGrid.replaceChildren();
+      categoryCount.textContent = `${categories.length} categories · 28 clips`;
+      categories.forEach((category, index) => {
+        let meta = '';
+        if (category.type === 'videos') meta = `${category.videos.length} clips`;
+        else if (category.type === 'photos') meta = category.pending ? `${category.photos.length} fotos · ${category.pending} pendent` : `${category.photos.length} nominats`;
+        else meta = `${category.pending} espais pendents`;
+        const card = button('', 'category-card', () => showCategory(index));
+        const number = document.createElement('span'); number.className = 'cat-num'; number.textContent = `CATEGORIA ${(index + 1).toString().padStart(2, '0')}`;
+        const name = document.createElement('span'); name.className = 'cat-name'; name.textContent = category.name;
+        const detailText = document.createElement('span'); detailText.className = 'cat-meta'; detailText.textContent = meta;
+        card.append(number, name, detailText);
+        categoryGrid.append(card);
+      });
+    }
+
+    function showCategory(index) {
+      const category = categories[index];
+      activeCategory = index;
+      catalogue.classList.add('hidden');
+      detail.classList.remove('hidden');
+      detail.replaceChildren();
+
+      const header = document.createElement('div'); header.className = 'detail-head';
+      header.append(button('← Categories', 'btn', showCatalogue));
+      const heading = document.createElement('div'); heading.className = 'detail-title';
+      const eyebrow = document.createElement('p'); eyebrow.className = 'eyebrow'; eyebrow.textContent = `CATEGORIA ${(index + 1).toString().padStart(2, '0')}`;
+      const title = document.createElement('h2'); title.textContent = category.name;
+      const desc = document.createElement('p'); desc.className = 'detail-desc';
+      if (category.type === 'videos') desc.textContent = `${category.videos.length} clips · Prem sobre un clip per reproduir-lo.`;
+      else if (category.type === 'photos') desc.textContent = category.pending ? `${category.photos.length} fotos · ${category.pending} espai pendent d’afegir.` : `${category.photos.length} nominats.`;
+      else desc.textContent = 'Aquesta categoria encara no té vídeos carregats.';
+      heading.append(eyebrow, title, desc); header.append(heading); detail.append(header);
+
+      if (category.type === 'videos') {
+        const grid = document.createElement('div'); grid.className = 'video-grid';
+        category.videos.forEach((video, videoIndex) => {
+          const card = button('', 'video-card', () => openVideo(index, videoIndex), `Reprodueix ${video.title}`);
+          const imageWrap = document.createElement('span'); imageWrap.className = 'poster-wrap';
+          const img = document.createElement('img'); img.src = video.poster; img.alt = ''; img.loading = 'lazy';
+          const play = document.createElement('span'); play.className = 'play-mark'; play.setAttribute('aria-hidden', 'true'); play.textContent = '▶';
+          imageWrap.append(img, play);
+          const name = document.createElement('span'); name.className = 'video-name'; name.textContent = video.title;
+          card.append(imageWrap, name); grid.append(card);
+        });
+        detail.append(grid);
+      } else if (category.type === 'photos') {
+        const grid = document.createElement('div'); grid.className = category.name === 'Millor Sèrie' ? 'photo-grid series-gallery' : 'photo-grid';
+        category.photos.forEach(photo => {
+          const card = document.createElement('article'); card.className = 'photo-card';
+          const img = document.createElement('img'); img.src = photo.src; img.alt = photo.title; img.loading = 'lazy';
+          const name = document.createElement('strong'); name.textContent = photo.title;
+          card.append(img, name); grid.append(card);
+        });
+        for (let i = 0; i < (category.pending || 0); i++) {
+          const card = document.createElement('article'); card.className = 'photo-card pending';
+          const visual = document.createElement('div'); visual.className = 'photo-pending-visual'; visual.textContent = '✦';
+          const name = document.createElement('strong'); name.textContent = 'Foto pendent';
+          card.append(visual, name); grid.append(card);
+        }
+        detail.append(grid);
+      } else {
+        const empty = document.createElement('div'); empty.className = 'empty-card';
+        const icon = document.createElement('div'); icon.className = 'empty-mark'; icon.textContent = '✦';
+        const emptyTitle = document.createElement('h3'); emptyTitle.textContent = 'Contingut en preparació';
+        const copy = document.createElement('p'); copy.textContent = 'Els vídeos d’aquesta categoria encara no s’han afegit. Els espais buits de la versió anterior no es mostren com si fossin vídeos reals.';
+        empty.append(icon, emptyTitle, copy); detail.append(empty);
+      }
+      if (window.renderVotePanel) window.renderVotePanel(index);
+      window.scrollTo({ top: document.getElementById('main').offsetTop - 10, behavior: 'smooth' });
+    }
+
+    function showCatalogue() {
+      closeVideo(); activeCategory = -1; detail.classList.add('hidden'); catalogue.classList.remove('hidden');
+      window.scrollTo({ top: document.getElementById('main').offsetTop - 10, behavior: 'smooth' });
+    }
+
+    function openVideo(categoryIndex, videoIndex) {
+      activeCategory = categoryIndex; activeVideo = videoIndex;
+      loadCurrentVideo(); modal.classList.add('open'); document.body.style.overflow = 'hidden';
+      document.getElementById('closeModal').focus();
+    }
+
+    function loadCurrentVideo() {
+      const category = categories[activeCategory];
+      const video = category.videos[activeVideo];
+      player.pause();
+      player.removeAttribute('src');
+      player.replaceChildren();
+      player.load();
+      videoError.classList.add('hidden');
+      videoError.textContent = '';
+      player.poster = video.poster;
+      const source = document.createElement('source');
+      source.src = video.src;
+      source.type = 'video/mp4';
+      player.append(source);
+      player.load();
+      modalTitle.textContent = video.title;
+      modalPosition.textContent = `${activeVideo + 1} / ${category.videos.length}`;
+      document.getElementById('previousVideo').disabled = activeVideo === 0;
+      document.getElementById('nextVideo').disabled = activeVideo === category.videos.length - 1;
+      const playAttempt = player.play();
+      if (playAttempt && typeof playAttempt.catch === 'function') {
+        playAttempt.catch(() => { /* Els controls natius permeten iniciar-lo manualment. */ });
+      }
+    }
+
+    function closeVideo() {
+      if (!modal.classList.contains('open')) return;
+      player.pause(); player.removeAttribute('src'); player.replaceChildren(); player.load();
+      videoError.classList.add('hidden'); videoError.textContent = '';
+      modal.classList.remove('open'); document.body.style.overflow = '';
+    }
+
+    function moveVideo(delta) {
+      const next = activeVideo + delta;
+      const list = categories[activeCategory].videos;
+      if (next < 0 || next >= list.length) return;
+      activeVideo = next; loadCurrentVideo();
+    }
+
+    player.addEventListener('error', () => {
+      videoError.textContent = 'No s’ha pogut carregar aquest vídeo. Comprova que has extret tot el ZIP i que index.html és al costat de la carpeta assets.';
+      videoError.classList.remove('hidden');
+    });
+
+    document.getElementById('exploreBtn').addEventListener('click', () => {
+      document.getElementById('main').scrollIntoView({ behavior: 'smooth' });
+    });
+    document.getElementById('closeModal').addEventListener('click', closeVideo);
+    document.getElementById('previousVideo').addEventListener('click', () => moveVideo(-1));
+    document.getElementById('nextVideo').addEventListener('click', () => moveVideo(1));
+    modal.addEventListener('click', event => { if (event.target === modal) closeVideo(); });
+    document.addEventListener('keydown', event => {
+      if (!modal.classList.contains('open')) return;
+      if (event.key === 'Escape') closeVideo();
+      if (event.key === 'ArrowLeft') moveVideo(-1);
+      if (event.key === 'ArrowRight') moveVideo(1);
+    });
+
+    renderCatalogue();
+  </script>
+  <script type="module" src="firebase-votes.js"></script>
+</body>
+</html>
