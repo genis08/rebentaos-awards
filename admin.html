@@ -1,11 +1,194 @@
-<!doctype html><html lang="ca"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>REBENTAOS · Resultats privats</title><style>body{font:16px system-ui;background:#12100d;color:#eee;max-width:850px;margin:35px auto;padding:15px}button{padding:12px;background:#d4af37;border:0;cursor:pointer}section{border:1px solid #5b4d28;padding:16px;margin:16px 0}h1,h2{color:#d4af37}li{margin:8px}</style><h1>Resultats privats · REBENTAOS AWARDS</h1><p id="status">Inicia sessió amb el compte administrador.</p><button id="login">Entrar amb Google</button><div id="results"></div><script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
-import { getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
-import { getFirestore,collection,getDocs } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
-const app=initializeApp({apiKey:'AIzaSyBOXfloqpjZJSo9itkoF_FRvybQuiHKWJQ',authDomain:'rebentaos-awards.firebaseapp.com',projectId:'rebentaos-awards',appId:'1:434854818580:web:8e2d57f10fb369124e0801'});
-const auth=getAuth(app),db=getFirestore(app),status=document.getElementById('status'),results=document.getElementById('results');
-const names=['Millor Clip','Millor Sèrie','Enfado de l’Any','Clip Forzado de l’Any','Millor Frase','Millor Actuació Musical','Incorporació de l’Any','Millor Convidat','Decepció de l’Any','MVP de l’Any'];
-const candidates=[['GUERRA CREMA','PICAPIEDRA','TORTILLA MANEL','VICTORIA, GANÉ'],['Ametlla de Mar','Vinaròs','Madrid','FM Castellbisbal','Estartit'],['¿DÓNDE ESTÁ MI CERVEZA?','GENÍS LI TIRA EL MÒBIL A GABRIEL','MARTÍ PEGA A TOT DÉU','AIGUA A LA CALA'],['DEJA YA DE GRABAR','BIEL A LA PISCINA','BIEL I GABRIEL TOSSINT DE CAMÍ A LA CALA','PARA YA DE GRABAR, TÍO'],['LOCO CON LA PECA','SERENO SERENITA','TORTILLA MANEL','VICTORIA, GANÉ'],['CONEJITA','FOCA','PERREO A LA PORTA','RAVE DEL NORBERT'],['VÍCTOR','MARTÍ','GABRIEL','ALFONSO'],['FRANCESES','MARC','ODEIFS','FERALYX'],['BIEL A L’ESTARTIT','GENÍS AMB LA FRANCESA','GENÍS A SAN FERMÍN','NURVA A L’ESTARTIT'],['BIEL','GABRIEL','GENÍS','MARTÍ','PAU']];
-document.getElementById('login').onclick=()=>signInWithPopup(auth,new GoogleAuthProvider()).catch(e=>status.textContent=e.message);
-onAuthStateChanged(auth,async u=>{if(!u)return;status.textContent='Comprovant permisos...';try{const snap=await getDocs(collection(db,'votes'));const totals=candidates.map(cs=>cs.map(()=>0));snap.forEach(d=>{const v=d.data();if(totals[v.category]?.[v.candidate]!==undefined)totals[v.category][v.candidate]++});status.textContent=`Accés administrador · ${snap.size} vots totals`;results.replaceChildren();names.forEach((name,i)=>{const s=document.createElement('section'),h=document.createElement('h2'),list=document.createElement('ol');h.textContent=name;s.append(h);candidates[i].forEach((c,j)=>{const li=document.createElement('li');li.textContent=`${c}: ${totals[i][j]} vots`;list.append(li)});s.append(list);results.append(s)});}catch(e){status.textContent='No tens permisos d’administrador. Configura el teu UID a les regles de Firestore. '+e.message}});
-</script></html>
+
+<!doctype html>
+<html lang="ca">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>REBENTAOS · Resultats privats</title>
+  <style>
+    body {
+      font: 16px system-ui;
+      background: #12100d;
+      color: #eee;
+      max-width: 850px;
+      margin: 35px auto;
+      padding: 15px;
+    }
+    button {
+      padding: 12px;
+      background: #d4af37;
+      border: 0;
+      cursor: pointer;
+      margin-right: 8px;
+    }
+    section {
+      border: 1px solid #5b4d28;
+      padding: 16px;
+      margin: 16px 0;
+    }
+    h1, h2 { color: #d4af37; }
+    li { margin: 8px; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <h1>Resultats privats · REBENTAOS AWARDS</h1>
+
+  <p id="status">Comprovant la sessió...</p>
+
+  <button id="login" hidden>Entrar amb Google</button>
+  <button id="logout" hidden>Tancar sessió</button>
+
+  <div id="results"></div>
+
+  <script type="module">
+    import { initializeApp } from
+      'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
+
+    import {
+      getAuth,
+      GoogleAuthProvider,
+      signInWithPopup,
+      signOut,
+      onAuthStateChanged
+    } from
+      'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
+
+    import {
+      getFirestore,
+      collection,
+      getDocs
+    } from
+      'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
+
+    const app = initializeApp({
+      apiKey: 'AIzaSyBOXfloqpjZJSo9itkoF_FRvybQuiHKWJQ',
+      authDomain: 'rebentaos-awards.firebaseapp.com',
+      projectId: 'rebentaos-awards',
+      appId: '1:434854818580:web:8e2d57f10fb369124e0801'
+    });
+
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const status = document.getElementById('status');
+    const results = document.getElementById('results');
+    const login = document.getElementById('login');
+    const logout = document.getElementById('logout');
+
+    const names = [
+      'Millor Clip',
+      'Millor Sèrie',
+      'Enfado de l’Any',
+      'Clip Forzado de l’Any',
+      'Millor Frase',
+      'Millor Actuació Musical',
+      'Incorporació de l’Any',
+      'Millor Convidat',
+      'Decepció de l’Any',
+      'MVP de l’Any'
+    ];
+
+    const candidates = [
+      ['GUERRA CREMA', 'PICAPIEDRA', 'TORTILLA MANEL', 'VICTORIA, GANÉ'],
+      ['Ametlla de Mar', 'Vinaròs', 'Madrid', 'FM Castellbisbal', 'Estartit'],
+      ['¿DÓNDE ESTÁ MI CERVEZA?', 'GENÍS LI TIRA EL MÒBIL A GABRIEL', 'MARTÍ PEGA A TOT DÉU', 'AIGUA A LA CALA'],
+      ['DEJA YA DE GRABAR', 'BIEL A LA PISCINA', 'BIEL I GABRIEL TOSSINT DE CAMÍ A LA CALA', 'PARA YA DE GRABAR, TÍO'],
+      ['LOCO CON LA PECA', 'SERENO SERENITA', 'TORTILLA MANEL', 'VICTORIA, GANÉ'],
+      ['CONEJITA', 'FOCA', 'PERREO A LA PORTA', 'RAVE DEL NORBERT'],
+      ['VÍCTOR', 'MARTÍ', 'GABRIEL', 'ALFONSO'],
+      ['FRANCESES', 'MARC', 'ODEIFS', 'FERALYX'],
+      ['BIEL A L’ESTARTIT', 'GENÍS AMB LA FRANCESA', 'GENÍS A SAN FERMÍN', 'NURVA A L’ESTARTIT'],
+      ['BIEL', 'GABRIEL', 'GENÍS', 'MARTÍ', 'PAU']
+    ];
+
+    let sessionVersion = 0;
+
+    login.onclick = async () => {
+      login.disabled = true;
+      try {
+        await signInWithPopup(auth, new GoogleAuthProvider());
+      } catch (e) {
+        status.textContent = 'Error en iniciar sessió: ' + e.message;
+      } finally {
+        login.disabled = false;
+      }
+    };
+
+    logout.onclick = async () => {
+      results.replaceChildren();
+      status.textContent = 'Tancant sessió...';
+      logout.hidden = true;
+
+      try {
+        await signOut(auth);
+      } catch (e) {
+        status.textContent = 'Error en tancar sessió: ' + e.message;
+      }
+    };
+
+    onAuthStateChanged(auth, async user => {
+      const version = ++sessionVersion;
+      results.replaceChildren();
+
+      if (!user) {
+        status.textContent = 'Inicia sessió amb el compte administrador.';
+        login.hidden = false;
+        logout.hidden = true;
+        return;
+      }
+
+      login.hidden = true;
+      logout.hidden = false;
+      status.textContent = 'Comprovant permisos...';
+
+      try {
+        const snap = await getDocs(collection(db, 'votes'));
+
+        if (version !== sessionVersion) return;
+
+        const totals = candidates.map(cs => cs.map(() => 0));
+
+        snap.forEach(doc => {
+          const vote = doc.data();
+
+          if (totals[vote.category]?.[vote.candidate] !== undefined) {
+            totals[vote.category][vote.candidate]++;
+          }
+        });
+
+        status.textContent =
+          'Sessió iniciada com a administrador · ' +
+          snap.size + ' vots totals';
+
+        names.forEach((name, i) => {
+          const section = document.createElement('section');
+          const heading = document.createElement('h2');
+          const list = document.createElement('ol');
+
+          heading.textContent = name;
+          section.append(heading);
+
+          candidates[i].forEach((candidate, j) => {
+            const item = document.createElement('li');
+            item.textContent =
+              `${candidate}: ${totals[i][j]} vots`;
+            list.append(item);
+          });
+
+          section.append(list);
+          results.append(section);
+        });
+
+      } catch (e) {
+        if (version !== sessionVersion) return;
+
+        results.replaceChildren();
+        status.textContent =
+          'No s’han pogut carregar els resultats. ' +
+          'Comprova els permisos d’administrador. ' + e.message;
+      }
+    });
+  </script>
+</body>
+</html>
